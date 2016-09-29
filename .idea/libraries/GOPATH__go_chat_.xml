@@ -10,6 +10,7 @@
       <root url="file://$PROJECT_DIR$/../hello/.idea" />
       <root url="file://$PROJECT_DIR$/../../sustain-go/logcheck/testdata" />
       <root url="file://$PROJECT_DIR$/../../gorilla/websocket/.git" />
+      <root url="file://$PROJECT_DIR$/.git" />
       <root url="file://$PROJECT_DIR$" />
       <root url="file://$PROJECT_DIR$/.idea" />
       <root url="file://$PROJECT_DIR$/../../sustain-go/.idea" />
