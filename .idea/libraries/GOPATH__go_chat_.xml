@@ -1,0 +1,18 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;go-chat&gt;">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../.." />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <excluded>
+      <root url="file://$PROJECT_DIR$/../../sustain-go/.git" />
+      <root url="file://$PROJECT_DIR$/../hello/.idea" />
+      <root url="file://$PROJECT_DIR$/../../sustain-go/logcheck/testdata" />
+      <root url="file://$PROJECT_DIR$/../../gorilla/websocket/.git" />
+      <root url="file://$PROJECT_DIR$" />
+      <root url="file://$PROJECT_DIR$/.idea" />
+      <root url="file://$PROJECT_DIR$/../../sustain-go/.idea" />
+    </excluded>
+  </library>
+</component>

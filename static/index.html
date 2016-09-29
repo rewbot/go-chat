@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <title>Go Chat!</title>
+        <style>
+            #messages {
+                border: 1px solid #666;
+                height: 300px;
+                width: 50%;
+                overflow: auto;
+            }
+            #msg {
+                width: 50%;
+                height: 3em;
+            }
+            #error {
+                color: #f00;
+                padding: 5px;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>GO CHAT!</h1>
+        <div id="phase1">
+            <P>Please enter your name to Join the chat</P>
+            <textarea type="text" placeholder="message" id="textbox"></textarea>
+            <button id="join">Join</button>
+        </div>
+        <div id="error"></div>
+        <div id="phase2" >
+            <div id="messages"></div>
+            <textarea id="msg"></textarea>
+            <br/><button id="sendButton">Send</button>
+        </div>
+        <script>
+            var joinButton = document.getElementById("join"),
+                    name = document.getElementById("textbox"),
+                    message = document.getElementById("msg"),
+                    socket = new WebSocket("ws://" + window.location.host +"/ws"),
+                    chat = document.getElementById("messages"),
+                    error = "";
+
+            socket.onopen = function(event) {
+                console.log(event.timestamp + " Socket opened successfully.");
+            }
+
+            joinButton.addEventListener("click", function(event){
+                if (name.value < 3){
+                    error = document.getElementById("error");
+                    error.innerHTML = "Name is too short";
+                } else {
+                    socket.send(name.value);
+                    name.value = "";
+                }
+            });
+
+            sendButton.addEventListener("click", function(event){
+                console.log("message text: " + message.value);
+                socket.send(message.value);
+                message.value = "";
+            });
+
+            socket.onerror = function(event){
+                console.log("Websocket error: " + event.value)
+            }
+
+            socket.onmessage = function(event){
+                chat.innerHTML = chat.innerHTML + event.data;
+                chat.scrollTop;
+            }
+        </script>
+    </body>
+</html>
