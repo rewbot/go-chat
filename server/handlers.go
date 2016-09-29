@@ -38,9 +38,12 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 				client.Exit()
 				return
 			}
-			fmt.Println("we are listening!")
-			fmt.Println(string(msg))
-			client.NewMsg(string(msg))
+			message := string(msg)
+			if message == "exit" {
+				client.Exit()
+			}
+
+			client.NewMsg(message)
 		}
 
 	}()

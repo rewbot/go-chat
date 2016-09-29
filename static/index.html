@@ -2,15 +2,14 @@
 <html>
     <head>
         <meta charset='utf-8'>
-        <title>Go Chat!</title>
         <style>
-            #messages {
+            #chatArea {
                 border: 1px solid #666;
                 height: 300px;
                 width: 50%;
                 overflow: auto;
             }
-            #msg {
+            #message {
                 width: 50%;
                 height: 3em;
             }
@@ -25,35 +24,41 @@
     <body>
         <h1>GO CHAT!</h1>
         <div id="phase1">
-            <P>Please enter your name to Join the chat</P>
-            <textarea type="text" placeholder="message" id="textbox"></textarea>
-            <button id="join">Join</button>
+            <input type="text" placeholder="Name" id="nameInput" style="visibility:visible">
+            <button id="joinButton">Join</button>
         </div>
         <div id="error"></div>
-        <div id="phase2" >
-            <div id="messages"></div>
-            <textarea id="msg"></textarea>
+        <div id="chatRoom" style="visibility:hidden">
+            <div id="chatArea"></div>
+            <textarea id="message"></textarea>
             <br/><button id="sendButton">Send</button>
+            <button id="leaveButton">leave</button>
         </div>
+
         <script>
-            var joinButton = document.getElementById("join"),
-                    name = document.getElementById("textbox"),
-                    message = document.getElementById("msg"),
+            var joinButton = document.getElementById("joinButton"),
+                    message = document.getElementById("message"),
+                    chat = document.getElementById("chatArea"),
                     socket = new WebSocket("ws://" + window.location.host +"/ws"),
-                    chat = document.getElementById("messages"),
-                    error = "";
+                    error = "",
+                    userName = document.getElementById("nameInput"),
+                    chatRoom = document.getElementById("chatRoom"),
+                    leaveButton = document.getElementById("leaveButton");
 
             socket.onopen = function(event) {
                 console.log(event.timestamp + " Socket opened successfully.");
             }
 
             joinButton.addEventListener("click", function(event){
-                if (name.value < 3){
+                if (userName.value.length < 3){
                     error = document.getElementById("error");
                     error.innerHTML = "Name is too short";
                 } else {
-                    socket.send(name.value);
-                    name.value = "";
+                    socket.send(userName.value);
+                    error.innerHTML = "";
+                    userName.value = "";
+
+                    loggedInVisibility();
                 }
             });
 
@@ -63,13 +68,30 @@
                 message.value = "";
             });
 
+            leaveButton.addEventListener("click", function(event){
+                socket.send("exit");
+                loggedOutVisibility();
+                userName.value = "";
+            });
+
             socket.onerror = function(event){
                 console.log("Websocket error: " + event.value)
             }
 
             socket.onmessage = function(event){
                 chat.innerHTML = chat.innerHTML + event.data;
-                chat.scrollTop;
+            }
+
+            loggedInVisibility = function(){
+                chatRoom.style.visibility = "visible";
+                userName.style.visibility = "hidden";
+                joinButton.style.visibility = "hidden";
+            }
+
+            loggedOutVisibility = function(){
+                chatRoom.style.visibility = "hidden";
+                userName.style.visibility = "visible";
+                joinButton.style.visibility = "visible";
             }
         </script>
     </body>
