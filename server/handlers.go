@@ -50,7 +50,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./static/index.html")
+	http.ServeFile(w, r, "./index.html")
 }
 
 func usersHandler(w http.ResponseWriter, r *http.Request) {
