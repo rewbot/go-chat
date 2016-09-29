@@ -3,19 +3,19 @@ package client
 import "github.com/gorilla/websocket"
 
 type Client struct {
-	name      string
-	conn      *websocket.Conn
-	belongsTo *ChatRoom
+	Name            string
+	conn            *websocket.Conn
+	currentChatRoom *ChatRoom
 }
 
-func (cl *Client) NewMsg(msg string) {
-	cl.belongsTo.AddMsg("<B>" + cl.name + ":</B> " + msg)
+func (client *Client) NewMsg(msg string) {
+	client.currentChatRoom.AddMsg("<B>" + client.Name + ":</B> " + msg)
 }
 
-func (cl *Client) Exit() {
-	cl.belongsTo.Leave(cl.name)
+func (client *Client) Exit() {
+	client.currentChatRoom.Leave(client.Name)
 }
 
-func (cl *Client) Send(msgs string) {
-	cl.conn.WriteMessage(websocket.TextMessage, []byte(msgs))
+func (client *Client) Send(msgs string) {
+	client.conn.WriteMessage(websocket.TextMessage, []byte(msgs))
 }

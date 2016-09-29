@@ -8,15 +8,15 @@ import (
 )
 
 type ChatRoom struct {
-	clients map[string]Client
+	Clients map[string]Client
 	clientsMtx sync.Mutex
-	queue   chan string
+	queue      chan string
 }
 
 func (cr *ChatRoom) Init() {
 	fmt.Println("Chatroom init")
 	cr.queue = make(chan string, 5)
-	cr.clients = make(map[string]Client)
+	cr.Clients = make(map[string]Client)
 
 	go func() {
 		for {
@@ -28,50 +28,49 @@ func (cr *ChatRoom) Init() {
 
 //registering a new client
 //returns pointer to a Client, or Nil, if the name is already taken
-func (cr *ChatRoom) Join(name string, conn *websocket.Conn) *Client {
-	defer cr.clientsMtx.Unlock();
+func (chatRoom *ChatRoom) Join(name string, conn *websocket.Conn) *Client {
+	defer chatRoom.clientsMtx.Unlock();
 
-	cr.clientsMtx.Lock(); //preventing simultaneous access to the `clients` map
-	if _, exists := cr.clients[name]; exists {
+	chatRoom.clientsMtx.Lock(); //preventing simultaneous access to the `clients` map
+	if _, exists := chatRoom.Clients[name]; exists {
 		return nil
 	}
 	client := Client{
-		name:      name,
+		Name:      name,
 		conn:      conn,
-		belongsTo: cr,
+		currentChatRoom: chatRoom,
 	}
-	cr.clients[name] = client
+	chatRoom.Clients[name] = client
 
-	cr.AddMsg("<B>" + name + "</B> has joined the chat.")
+	chatRoom.AddMsg("<B>" + name + "</B> has joined the chat.")
 	return &client
 }
 
-func (cr *ChatRoom) Leave(name string) {
-	cr.clientsMtx.Lock(); //preventing simultaneous access to the `clients` map
-	delete(cr.clients, name)
-	cr.clientsMtx.Unlock();
-	cr.AddMsg("<B>" + name + "</B> has left the chat.")
+func (chatRoom *ChatRoom) Leave(name string) {
+	chatRoom.clientsMtx.Lock(); //preventing simultaneous access to the `clients` map
+	delete(chatRoom.Clients, name)
+	chatRoom.clientsMtx.Unlock();
+	chatRoom.AddMsg("<B>" + name + "</B> has left the chat.")
 }
 
-func (cr *ChatRoom) AddMsg(msg string) {
-	cr.queue <- msg
+func (chatRoom *ChatRoom) AddMsg(msg string) {
+	chatRoom.queue <- msg
 }
 
-func (cr *ChatRoom) BroadCast() {
+func (chatRoom *ChatRoom) BroadCast() {
 	msgBlock := ""
 	infLoop:
-	for {
-		select {
-		case m := <-cr.queue:
-			fmt.Println("we have a queued item")
-			fmt.Println(m)
-			msgBlock += m + "<BR>"
-		default:
-			break infLoop
+		for {
+			select {
+			case m := <-chatRoom.queue:
+				msgBlock += m + "<BR>"
+			default:
+				break infLoop
+			}
 		}
-	}
+
 	if len(msgBlock) > 0 {
-		for _, client := range cr.clients {
+		for _, client := range chatRoom.Clients {
 			client.Send(msgBlock)
 		}
 	}
