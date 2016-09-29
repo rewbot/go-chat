@@ -26,8 +26,6 @@ func (cr *ChatRoom) Init() {
 	}()
 }
 
-//registering a new client
-//returns pointer to a Client, or Nil, if the name is already taken
 func (chatRoom *ChatRoom) Join(name string, conn *websocket.Conn) *Client {
 	defer chatRoom.clientsMtx.Unlock();
 
