@@ -46,7 +46,16 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 }
 
-func staticFiles(w http.ResponseWriter, r *http.Request) {
-	//http.ServeFile(w, r, "./static/"+r.URL.Path)
+func indexHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./static/index.html")
+}
+
+func usersHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var user string
+	for key, _ := range chatRoom.Clients {
+		user += fmt.Sprintf(`{"%s"}, `, key)
+	}
+
+	fmt.Fprintf(w, "%s", user)
 }
