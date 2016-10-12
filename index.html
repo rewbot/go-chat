@@ -32,7 +32,6 @@
             <div id="chatArea"></div>
             <textarea id="message"></textarea>
             <br/><button id="sendButton">Send</button>
-            <button id="leaveButton">leave</button>
         </div>
 
         <script>
@@ -50,9 +49,9 @@
             }
 
             joinButton.addEventListener("click", function(event){
-                if (userName.value.length < 3){
+                if (userName.value.length <= 0){
                     error = document.getElementById("error");
-                    error.innerHTML = "Name is too short";
+                    error.innerHTML = "Name cannot be empty";
                 } else {
                     socket.send(userName.value);
                     error.innerHTML = "";
@@ -66,12 +65,6 @@
                 console.log("message text: " + message.value);
                 socket.send(message.value);
                 message.value = "";
-            });
-
-            leaveButton.addEventListener("click", function(event){
-                socket.send("exit");
-                loggedOutVisibility();
-                userName.value = "";
             });
 
             socket.onerror = function(event){

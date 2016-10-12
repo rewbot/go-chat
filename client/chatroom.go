@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"github.com/gorilla/websocket"
 	"time"
 	"sync"
@@ -13,14 +12,14 @@ type ChatRoom struct {
 	queue      chan string
 }
 
-func (cr *ChatRoom) Init() {
-	fmt.Println("Chatroom init")
-	cr.queue = make(chan string, 5)
-	cr.Clients = make(map[string]Client)
+func (chatRoom *ChatRoom) Init() {
+	//The 5 is a buffer. The channel will block when the queue exceeds 5
+	chatRoom.queue = make(chan string, 5)
+	chatRoom.Clients = make(map[string]Client)
 
 	go func() {
 		for {
-			cr.BroadCast()
+			chatRoom.BroadCast()
 			time.Sleep(100 * time.Millisecond)
 		}
 	}()
@@ -39,8 +38,7 @@ func (chatRoom *ChatRoom) Join(name string, conn *websocket.Conn) *Client {
 		currentChatRoom: chatRoom,
 	}
 	chatRoom.Clients[name] = client
-
-	chatRoom.AddMsg("<B>" + name + "</B> has joined the chat.")
+	chatRoom.AddMessage("<B>" + name + "</B> has joined the chat.")
 	return &client
 }
 
@@ -48,28 +46,28 @@ func (chatRoom *ChatRoom) Leave(name string) {
 	chatRoom.clientsMtx.Lock(); //preventing simultaneous access to the `clients` map
 	delete(chatRoom.Clients, name)
 	chatRoom.clientsMtx.Unlock();
-	chatRoom.AddMsg("<B>" + name + "</B> has left the chat.")
+	chatRoom.AddMessage("<B>" + name + "</B> has left the chat.")
 }
 
-func (chatRoom *ChatRoom) AddMsg(msg string) {
+func (chatRoom *ChatRoom) AddMessage(msg string) {
 	chatRoom.queue <- msg
 }
 
 func (chatRoom *ChatRoom) BroadCast() {
-	msgBlock := ""
+	messageBlock := ""
 	infLoop:
 		for {
 			select {
-			case m := <-chatRoom.queue:
-				msgBlock += m + "<BR>"
+			case m := <- chatRoom.queue:
+				messageBlock += m + "<BR>"
 			default:
 				break infLoop
 			}
 		}
 
-	if len(msgBlock) > 0 {
+	if len(messageBlock) > 0 {
 		for _, client := range chatRoom.Clients {
-			client.Send(msgBlock)
+			client.Send(messageBlock)
 		}
 	}
 }

@@ -10,7 +10,6 @@ var chatRoom client.ChatRoom
 func AttachHandlers() {
 	http.HandleFunc("/ws", wsHandler)
 	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/users", usersHandler)
 }
 
 func Init() {

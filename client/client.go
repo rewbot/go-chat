@@ -8,14 +8,14 @@ type Client struct {
 	currentChatRoom *ChatRoom
 }
 
-func (client *Client) NewMsg(msg string) {
-	client.currentChatRoom.AddMsg("<B>" + client.Name + ":</B> " + msg)
+func (client *Client) NewMessage(message string) {
+	client.currentChatRoom.AddMessage("<B>" + client.Name + ":</B> " + message)
 }
 
 func (client *Client) Exit() {
 	client.currentChatRoom.Leave(client.Name)
 }
 
-func (client *Client) Send(msgs string) {
-	client.conn.WriteMessage(websocket.TextMessage, []byte(msgs))
+func (client *Client) Send(messages string) {
+	client.conn.WriteMessage(websocket.TextMessage, []byte(messages))
 }
