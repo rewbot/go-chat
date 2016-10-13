@@ -20,7 +20,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	go func() {
-		//first message has to be the name, it waits here until message is received
+		//conn.ReadMessage waits here until a message is received (in this case the name of the person joining)
 		_, msg, err := conn.ReadMessage()
 		client := chatRoom.Join(string(msg), conn)
 		if client == nil || err != nil {
@@ -28,8 +28,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		//then watch for incoming messages
 		for {
+			//read any messages sent by client after joining
 			_, msg, err := conn.ReadMessage()
 			if err != nil {
 				fmt.Println("Error occurred on conn.ReadMessage: " + err.Error())
