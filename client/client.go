@@ -9,7 +9,8 @@ type Client struct {
 }
 
 func (client *Client) NewMessage(message string) {
-	client.currentChatRoom.AddMessage("<B>" + client.Name + ":</B> " + message)
+	//TODO: Uncomment this line after AddMessage has been implemented
+	//client.currentChatRoom.AddMessage("<B>" + client.Name + ":</B> " + message)
 }
 
 func (client *Client) Exit() {
